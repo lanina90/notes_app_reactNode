@@ -11,7 +11,7 @@ export type NoteType = {
   archived: boolean
 }
 
-type NotesStateType = {
+interface NotesStateType {
   notes: NoteType[],
   stats: any,
   isLoading: boolean
@@ -103,7 +103,8 @@ const notesSlice = createSlice({
       state.isLoading = true
     })
     builder.addCase(createNewNote.fulfilled, (state, action) => {
-      state.notes.push(action.payload)
+      const newNote = action.payload
+      state.notes.push(newNote);
       state.isLoading = false
     })
     builder.addCase(createNewNote.rejected, (state, action) => {

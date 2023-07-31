@@ -1,14 +1,9 @@
-const express = require('express')
-const router = express.Router()
-const {createNote,
-  deleteNote,
-  editNote,
-  getAllNotes,
-  getOneNote,
-  toggleArchiveNote,
-  getStats} = require('./controllers/notes')
 
 
+import express from 'express'
+import {createNote, deleteNote, editNote, toggleArchiveNote, getAllNotes, getOneNote, getStats  } from './controllers/notes'
+
+export const router = express.Router()
 
 //Create a note object/
 router.post('/', createNote )
@@ -32,4 +27,4 @@ router.get('/:id', getOneNote)
 router.get('/stats/all', getStats)
 
 
-module.exports = router
+

@@ -3,7 +3,9 @@
 /**
  * Module dependencies.
  */
-const app = require('../index');
+
+import app from '../dist/index.js'
+
 const debug = require('debug')('server:server');
 const http = require('http');
 

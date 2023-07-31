@@ -1,7 +1,6 @@
 
-const yup = require('yup')
-
-const noteSchema  = yup.object({
+import * as yup from 'yup'
+export const noteSchema  = yup.object({
   id: yup.string().required(),
   title: yup.string().required(),
   created: yup.string().required(),
@@ -11,4 +10,7 @@ const noteSchema  = yup.object({
   archived: yup.boolean().required(),
 })
 
-module.exports = noteSchema
+export const toggleArchiveNoteSchema = yup.object().shape({
+  archived: yup.boolean().required(),
+});
+
