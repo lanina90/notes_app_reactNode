@@ -1,6 +1,6 @@
 import React, {FC} from 'react'
 import {getCategoryImage, trimText} from "../../utils/helperFunctions"
-import {deleteOneNote, fetchNotes, NoteType, toggleArchiveNote} from "../../store/notesSlice"
+import {deleteOneNote, fetchNotes, fetchStatistics, NoteType, toggleArchiveNote} from "../../store/notesSlice"
 import {useAppDispatch} from "../../hooks"
 
 type TableRowArchivedAndUnarchivedPropsType = {
@@ -21,19 +21,21 @@ const TableRowArchivedAndUnarchived: FC<TableRowArchivedAndUnarchivedPropsType> 
     dispatch(deleteOneNote(id))
       .then((response) => {
         if (response.meta.requestStatus === 'fulfilled') {
-          dispatch(fetchNotes());
+          dispatch(fetchNotes())
+          dispatch(fetchStatistics())
         }
-      });
-  };
+      })
+  }
 
   const toggleNoteHandler = (id: string, archived: boolean) => {
     dispatch(toggleArchiveNote({ id, archived}))
       .then((response) => {
         if (response.meta.requestStatus === 'fulfilled') {
-          dispatch(fetchNotes());
+          dispatch(fetchNotes())
+          dispatch(fetchStatistics())
         }
-      });
-  };
+      })
+  }
 
 
   return (

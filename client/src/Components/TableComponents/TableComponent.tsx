@@ -1,17 +1,9 @@
 import React, {FC, ReactNode, useEffect, useState} from 'react'
 import {getCategoryImage} from "../../utils/helperFunctions"
-import {NoteType} from "../../store/notesSlice"
+import {fetchStatistics, NoteType} from "../../store/notesSlice"
 import EditNoteComponent from "../Forms/EditNoteComponent"
 import TableRowArchivedAndUnarchived from "./TableRowArchivedAndUnarchived"
-import {useAppSelector} from "../../hooks"
-import {log} from "util";
-
-type SummaryDataTypes = {
-  [category: string]: {
-    active: number
-    archived: number
-  }
-}
+import {useAppDispatch, useAppSelector} from "../../hooks"
 
 type TableComponentPropsType = {
   headers: ReactNode[]
@@ -19,34 +11,21 @@ type TableComponentPropsType = {
 }
 
 const TableComponent: FC<TableComponentPropsType> = ({headers, tableShowFor}) => {
-
-  const notes = useAppSelector(state => state.notes.notes)
+  const dispatch = useAppDispatch()
   const archivedNotes = useAppSelector(state => state.notes.notes.filter(note => note.archived))
   const notArchivedNotes = useAppSelector(state => state.notes.notes.filter(note => !note.archived))
   const [editedNoteId, setEditedNoteId] = useState<string | null>(null)
-  const [summaryData, setSummaryData] = useState<SummaryDataTypes>({})
   const noteToEdit = notArchivedNotes.find((note: NoteType) => note.id === editedNoteId)
+  const stats = useAppSelector((state) => state.notes.stats)
 
-  useEffect(() => {
-    renderSummaryTable()
-  }, [notes])
 
   const handleEditNote = (id: string) => {
-    setEditedNoteId(id);
-  };
-
-  const renderSummaryTable = () => {
-    const categoriesCount = notes.reduce((acc: any, note) => {
-      const status = note.archived ? 'archived' : 'active'
-      const category = note.category
-
-      acc[category] = acc[category] || {active: 0, archived: 0}
-      acc[category][status]++
-      return acc
-    }, {})
-
-    setSummaryData(categoriesCount)
+    setEditedNoteId(id)
   }
+
+  useEffect(() => {
+    dispatch(fetchStatistics())
+  }, [dispatch])
 
   const notesToShow = tableShowFor === 'unarchived' ? notArchivedNotes : archivedNotes
 
@@ -72,7 +51,7 @@ const TableComponent: FC<TableComponentPropsType> = ({headers, tableShowFor}) =>
 
         {tableShowFor === 'summary' &&
           (
-            Object.keys(summaryData).map((category) => (
+            stats && Object.keys(stats)?.map((category) => (
               <tr key={category}>
                 <td>
                   <div className="flex-container">
@@ -82,8 +61,8 @@ const TableComponent: FC<TableComponentPropsType> = ({headers, tableShowFor}) =>
                     <div>{category}</div>
                   </div>
                 </td>
-                <td>{summaryData[category].active}</td>
-                <td>{summaryData[category].archived}</td>
+                <td>{stats[category].active}</td>
+                <td>{stats[category].archived}</td>
               </tr>
             ))
           )

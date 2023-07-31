@@ -4,27 +4,27 @@ const noteSchema  = require('../../helpers/validators')
 
 const createNote = async (req, res) => {
 try {
-  const newNote = req.body;
-  noteSchema.validateSync(newNote);
-  const createdNote = { ...newNote };
-  notes.push(createdNote);
-  res.status(201).json(createdNote);
+  const newNote = req.body
+  noteSchema.validateSync(newNote)
+  const createdNote = { ...newNote }
+  notes.push(createdNote)
+  res.status(201).json(createdNote)
 } catch (e) {
-  res.status(400).json({message: 'Failed to create the note. Please ensure all fields are filled correctly.'});
+  res.status(400).json({message: 'Failed to create the note. Please ensure all fields are filled correctly.'})
 }
 }
 
 const editNote = async (req, res) => {
  try{
-   const id = req.params.id;
-   const updatedNote = req.body;
-   noteSchema.validateSync(updatedNote);
-   const index = notes.findIndex((n) => n.id === id);
+   const id = req.params.id
+   const updatedNote = req.body
+   noteSchema.validateSync(updatedNote)
+   const index = notes.findIndex((n) => n.id === id)
    if (index >= 0) {
-     notes[index] = { ...notes[index], ...updatedNote };
-     res.json(notes[index]);
+     notes[index] = { ...notes[index], ...updatedNote }
+     res.json(notes[index])
    } else {
-     res.status(404).json({ message: 'Note not found' });
+     res.status(404).json({ message: 'Note not found' })
    }
  } catch (e) {
    res.status(500).json({ message: 'An error occurred while updating the note.' })
@@ -33,33 +33,33 @@ const editNote = async (req, res) => {
 
 const deleteNote = async (req, res) => {
   try{
-    const id = req.params.id;
-    const index = notes.findIndex((n) => n.id === id);
+    const id = req.params.id
+    const index = notes.findIndex((n) => n.id === id)
     if (index >= 0) {
-      const deletedNote = notes.splice(index, 1)[0];
-      res.json(deletedNote);
+      const deletedNote = notes.splice(index, 1)[0]
+      res.json(deletedNote)
     } else {
-      res.status(404).json({ message: 'Note not found' });
+      res.status(404).json({ message: 'Note not found' })
     }
   } catch (e) {
-    res.status(500).json({ message: 'An error occurred while deleting the note.' });
+    res.status(500).json({ message: 'An error occurred while deleting the note.' })
   }
 }
 
 const toggleArchiveNote = async (req, res) => {
   try {
-    const id = req.params.id;
-    const {archived} = req.body;
-    const index = notes.findIndex((n) => n.id === id);
+    const id = req.params.id
+    const {archived} = req.body
+    const index = notes.findIndex((n) => n.id === id)
 
     if (index !== -1) {
-      notes[index] = { ...notes[index], archived: archived };
-      res.json(notes[index]);
+      notes[index] = { ...notes[index], archived: archived }
+      res.json(notes[index])
     } else {
-      res.status(404).json({ message: 'Note not found' });
+      res.status(404).json({ message: 'Note not found' })
     }
   } catch (e) {
-    res.status(500).json({ message: 'An error occurred while updating the note.' });
+    res.status(500).json({ message: 'An error occurred while updating the note.' })
   }
 }
 
@@ -68,32 +68,42 @@ const getAllNotes = async (req, res) => {
   try{
     res.status(200).json(notes)
   } catch (e) {
-    res.status(500).json({ message: 'An error occurred while fetching all notes.' });
+    res.status(500).json({ message: 'An error occurred while fetching all notes.' })
   }
 }
 
 const getOneNote = async (req, res) => {
  try{
-   const id = req.params.id;
-   const note = notes.find((n) => n.id === id);
+   const id = req.params.id
+   const note = notes.find((n) => n.id === id)
    if (note) {
-     res.json(note);
+     res.json(note)
    } else {
-     res.status(404).json({ message: 'Note not found' });
+     res.status(404).json({ message: 'Note not found' })
    }
  } catch (e) {
-   res.status(500).json({ message: 'An error occurred while fetching the note.' });
+   res.status(500).json({ message: 'An error occurred while fetching the note.' })
  }
 }
 
-const getStats = (req, res) => {
- try{
-   const archivedNotesCount = notes.filter((note) => note.archived).length;
-   res.json({ archivedNotesCount });
- } catch (e) {
-   res.status(500).json({ message: 'An error occurred while fetching the statistics.' });
- }
+const getStats = async (req, res) => {
+
+  try {
+
+    const categoriesCount = notes.reduce((acc, note) => {
+      const status = note.archived ? 'archived' : 'active'
+      const category = note.category
+
+      acc[category] = acc[category] || {active: 0, archived: 0}
+      acc[category][status]++
+      return acc
+    }, {})
+    res.json(categoriesCount)
+  } catch (error) {
+    res.status(500).json({ message: 'An error occurred while fetching statistics.' })
+  }
 }
+
 
 module.exports = {
   createNote, editNote, getAllNotes, deleteNote, getStats, getOneNote, toggleArchiveNote

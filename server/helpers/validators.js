@@ -1,5 +1,5 @@
 
-const yup = require('yup');
+const yup = require('yup')
 
 const noteSchema  = yup.object({
   id: yup.string().required(),
@@ -9,6 +9,6 @@ const noteSchema  = yup.object({
   content: yup.string().required(),
   dates: yup.string().notRequired(),
   archived: yup.boolean().required(),
-});
+})
 
 module.exports = noteSchema

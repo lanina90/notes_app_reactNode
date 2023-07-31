@@ -1,5 +1,5 @@
-const express = require('express');
-const router = express.Router();
+const express = require('express')
+const router = express.Router()
 const {createNote,
   deleteNote,
   editNote,
@@ -7,6 +7,8 @@ const {createNote,
   getOneNote,
   toggleArchiveNote,
   getStats} = require('./controllers/notes')
+
+
 
 //Create a note object/
 router.post('/', createNote )
@@ -27,7 +29,7 @@ router.get('/', getAllNotes )
 router.get('/:id', getOneNote)
 
 //Get aggregated data statistics/
-router.get('/stats', getStats)
+router.get('/stats/all', getStats)
 
 
-module.exports = router;
+module.exports = router

@@ -2,7 +2,7 @@ import {ChangeEvent, FC, FormEvent, useState} from 'react'
 import {v4 as uuidv4} from 'uuid'
 import {createDate, getDatesFromString} from "../../utils/helperFunctions"
 import {useAppDispatch} from "../../hooks"
-import {createNewNote} from "../../store/notesSlice";
+import {createNewNote, fetchStatistics} from "../../store/notesSlice"
 
 type ValueType = {
   title: string
@@ -39,7 +39,8 @@ const CreateNoteForm: FC<{ setIsCreateFromOpen: (open: boolean) => void }> = ({s
       archived: false,
     }
 
-   dispatch(createNewNote(newNote))
+    dispatch(createNewNote(newNote))
+    dispatch(fetchStatistics())
 
     setValue({
       title: '',

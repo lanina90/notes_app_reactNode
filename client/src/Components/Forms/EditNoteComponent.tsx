@@ -41,7 +41,7 @@ const EditNoteComponent: FC<EditNoteComponentPropsType> = ({setEditedNoteId, not
       category: value.category,
       content: value.content,
       dates: getDatesFromString(value.content),
-    }));
+    }))
 
     setValue({
       title: '',

@@ -2,8 +2,8 @@ import {useEffect, useState} from 'react'
 import TableComponent from "../Components/TableComponents/TableComponent"
 import CreateNoteForm from "../Components/Forms/CreateNoteForm"
 import {FC} from "react"
-import {useAppDispatch} from "../hooks";
-import {fetchNotes} from "../store/notesSlice";
+import {useAppDispatch} from "../hooks"
+import {fetchNotes} from "../store/notesSlice"
 
 const Layout: FC = () => {
   const [isCreateFromOpen, setIsCreateFromOpen] = useState<boolean>(false)
@@ -50,14 +50,14 @@ const Layout: FC = () => {
         tableShowFor='archived'
       />
 
-      {/*<TableComponent*/}
-      {/*  headers={[*/}
-      {/*    "Note Category",*/}
-      {/*    "Active",*/}
-      {/*    "Archived"*/}
-      {/*  ]}*/}
-      {/*  tableShowFor='summary'*/}
-      {/*/>*/}
+      <TableComponent
+        headers={[
+          "Note Category",
+          "Active",
+          "Archived"
+        ]}
+        tableShowFor='summary'
+      />
 
     </>
   )

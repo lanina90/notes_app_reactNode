@@ -1,5 +1,5 @@
-import {createAsyncThunk, createSlice, PayloadAction} from "@reduxjs/toolkit"
-import {fetchAllNotes, createNote, deleteNote, editNote, toggleArchiveOnServer} from "../services/api";
+import {createAsyncThunk, createSlice} from "@reduxjs/toolkit"
+import {fetchAllNotes, createNote, deleteNote, editNote, toggleArchiveOnServer, fetchStats} from "../services/api"
 
 export type NoteType = {
   id: string
@@ -11,20 +11,19 @@ export type NoteType = {
   archived: boolean
 }
 
-export type NoteEditType = {
-  id: string
-  title: string
-  category: string
-  content: string
-  dates: string
+type NotesStateType = {
+  notes: NoteType[],
+  stats: any,
+  isLoading: boolean
+  error: any
 }
 
-type NotesStateType = {
-  notes: NoteType[]
-}
 
 const initialState: NotesStateType = {
-  notes: []
+  notes: [],
+  stats: null,
+  isLoading: false,
+  error: null,
 }
 
 export const fetchNotes = createAsyncThunk(
@@ -32,29 +31,42 @@ export const fetchNotes = createAsyncThunk(
   async () => {
     return await fetchAllNotes()
   }
-);
+)
+
+export const fetchStatistics = createAsyncThunk(
+  'notes/fetchStatistics',
+  async () => {
+    try {
+      return await fetchStats()
+    } catch (e) {
+      console.error('Error toggling archive:', e)
+      throw e
+    }
+  }
+)
+
 
 export const createNewNote = createAsyncThunk(
   "notes/createNewNote",
   async (noteData: NoteType) => {
     try{
-      return await createNote(noteData);
+      return await createNote(noteData)
     } catch (e) {
       console.log('createNewNote', e)
     }
   }
-);
+)
 
 export const deleteOneNote = createAsyncThunk(
   "notes/deleteOneNote",
   async (id: string) => {
     try{
-      return await deleteNote(id);
+      return await deleteNote(id)
     } catch (e) {
       console.log('createNewNote', e)
     }
   }
-);
+)
 
 export const editOneNote = createAsyncThunk(
   "notes/editOneNote",
@@ -65,34 +77,63 @@ export const editOneNote = createAsyncThunk(
       console.log('createNewNote', e)
     }
   }
-);
+)
 
 export const toggleArchiveNote = createAsyncThunk(
   'notes/toggleArchiveNote',
   async ({ id, archived }: { id: string, archived: boolean }) => {
     try {
-      const response = await toggleArchiveOnServer(id, !archived);
-      return response.data;
+      const response = await toggleArchiveOnServer(id, !archived)
+      return response.data
     } catch (e) {
-      console.error('Error toggling archive:', e);
-      throw e;
+      console.error('Error toggling archive:', e)
+      throw e
     }
   }
-);
+)
+
+
 
 const notesSlice = createSlice({
   name: 'notes',
   initialState,
   reducers: {},
   extraReducers: (builder) => {
+    builder.addCase(createNewNote.pending, (state) => {
+      state.isLoading = true
+    })
     builder.addCase(createNewNote.fulfilled, (state, action) => {
-      state.notes.push(action.payload);
+      state.notes.push(action.payload)
+      state.isLoading = false
+    })
+    builder.addCase(createNewNote.rejected, (state, action) => {
+      state.isLoading = false
+      state.error = action.error.message
+    })
+    builder.addCase(fetchNotes.pending, (state) => {
+      state.isLoading = true
     })
     builder.addCase(fetchNotes.fulfilled, (state, action) => {
-      state.notes = action.payload.flat();
+      state.notes = action.payload.flat()
+      state.isLoading = false
+    })
+    builder.addCase(fetchNotes.rejected, (state, action) => {
+      state.isLoading = false
+      state.error = action.error.message
+    })
+    builder.addCase(deleteOneNote.pending, (state) => {
+      state.isLoading = true
     })
     builder.addCase(deleteOneNote.fulfilled, (state, action) => {
       state.notes = state.notes.filter((note) => note.id !== action.payload)
+      state.isLoading = false
+    })
+    builder.addCase(deleteOneNote.rejected, (state, action) => {
+      state.isLoading = false
+      state.error = action.error.message
+    })
+    builder.addCase(editOneNote.pending, (state) => {
+      state.isLoading = true
     })
     builder.addCase(editOneNote.fulfilled, (state, action) => {
       const {id, title, category, content, dates} = action.payload
@@ -103,17 +144,40 @@ const notesSlice = createSlice({
         noteToEdit.content = content
         noteToEdit.dates = dates
       }
+      state.isLoading = false
+    })
+    builder.addCase(editOneNote.rejected, (state, action) => {
+      state.isLoading = false
+      state.error = action.error.message
+    })
+    builder.addCase(toggleArchiveNote.pending, (state) => {
+      state.isLoading = true
     })
     builder.addCase(toggleArchiveNote.fulfilled, (state, action) => {
-      const id = action.payload;
-      const noteToToggle = state.notes.find((note) => note.id === id);
+      const id = action.payload
+      const noteToToggle = state.notes.find((note) => note.id === id)
       if (noteToToggle) {
-        noteToToggle.archived = !noteToToggle.archived;
+        noteToToggle.archived = !noteToToggle.archived
       }
-    });
+      state.isLoading = false
+    })
+    builder.addCase(toggleArchiveNote.rejected, (state, action) => {
+      state.isLoading = false
+      state.error = action.error.message
+    })
+    builder.addCase(fetchStatistics.pending, (state) => {
+      state.isLoading = true
+    })
+    builder.addCase(fetchStatistics.fulfilled, (state, action) => {
+      state.stats = action.payload
+      state.isLoading = false
+    })
+    builder.addCase(fetchStatistics.rejected, (state, action) => {
+      state.isLoading = false
+      state.error = action.error.message
+    })
   },
 })
-
 
 
 export default notesSlice.reducer
