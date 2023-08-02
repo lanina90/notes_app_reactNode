@@ -58,8 +58,8 @@ const EditNoteComponent: FC<EditNoteComponentPropsType> = ({setEditedNoteId, not
 
 
   return (
-    <section className="absolute top-20 left-1/4 w-1/2 h-72 bg-white z-20 rounded-2xl">
-      <form className="flex flex-col p-5" onSubmit={editNoteHandler}>
+    <section className="edit-module">
+      <form className="edit-form" onSubmit={editNoteHandler}>
         <Input labelName={"Title"} value={value.title} onChange={handleChange} type={"text"} id={"title"}
                name={"title"}/>
         <Input labelName={"Content"} value={value.content} onChange={handleChange} type={"text"} id={"content"}
@@ -67,9 +67,7 @@ const EditNoteComponent: FC<EditNoteComponentPropsType> = ({setEditedNoteId, not
         <Select labelName={"Category"} value={value.category} onChange={handleChange} name={"category"}
                 options={["Task", "Random Thought", "Idea", "Quote"]}/>
 
-        <Button className={'w-3/6 mx-auto my-4 p-2.5h-9 cursor-pointer p-1 border-2 border-dark-grey hover:bg-dark-grey'}
-                type={'submit'}
-                label={'Save'}/>
+        <Button type={'submit'} label={'Save'}/>
       </form>
     </section>
   )
