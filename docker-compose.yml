@@ -7,7 +7,7 @@ services:
     depends_on:
       - db
     environment:
-      - DATABASE_URL=postgres://postgres:your_password@db:5432/postgres
+      - DATABASE_URL=postgres://notes_user:postgres@db:5432/postgres
   client:
     build: ./client
     ports:
@@ -17,6 +17,7 @@ services:
   db:
     image: 'postgres'
     environment:
+      - POSTGRES_USER=notes_user
       - POSTGRES_PASSWORD=postgres
     volumes:
       - './data/db:/var/lib/postgresql/data'
