@@ -1,0 +1,20 @@
+version: '3'
+services:
+  server:
+    build: ./server
+    ports:
+      - "5000:5000"
+    depends_on:
+      - db
+    environment:
+      - DATABASE_URL=postgres://postgres:your_password@db:5432/postgres
+  client:
+    build: ./client
+    ports:
+      - "3000:3000"
+  db:
+    image: 'postgres'
+    environment:
+      - POSTGRES_PASSWORD=postgres
+    volumes:
+      - './data/db:/var/lib/postgresql/data'
