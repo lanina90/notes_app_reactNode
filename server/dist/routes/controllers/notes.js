@@ -32,7 +32,7 @@ const editNote = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const id = req.params.id;
         const updatedNote = req.body;
-        validators_1.noteSchema.validateSync(updatedNote);
+        yield validators_1.noteSchema.validate(updatedNote);
         const index = MockedDB_json_1.default.findIndex((n) => n.id === id);
         if (index >= 0) {
             MockedDB_json_1.default[index] = Object.assign(Object.assign({}, MockedDB_json_1.default[index]), updatedNote);
@@ -69,6 +69,7 @@ const toggleArchiveNote = (req, res) => __awaiter(void 0, void 0, void 0, functi
         const id = req.params.id;
         const { archived } = req.body;
         const index = MockedDB_json_1.default.findIndex((n) => n.id === id);
+        validators_1.toggleArchiveNoteSchema.validateSync({ archived });
         if (index !== -1) {
             MockedDB_json_1.default[index] = Object.assign(Object.assign({}, MockedDB_json_1.default[index]), { archived: archived });
             res.json(MockedDB_json_1.default[index]);
@@ -96,6 +97,7 @@ const getOneNote = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
         const id = req.params.id;
         const note = MockedDB_json_1.default.find((n) => n.id === id);
         if (note) {
+            validators_1.noteSchema.validateSync(note);
             res.json(note);
         }
         else {

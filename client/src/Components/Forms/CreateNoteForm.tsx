@@ -3,6 +3,9 @@ import {v4 as uuidv4} from 'uuid'
 import {createDate, getDatesFromString} from "../../utils/helperFunctions"
 import {useAppDispatch} from "../../hooks"
 import {createNewNote, fetchStatistics} from "../../store/notesSlice"
+import Button from "../../UIKit/Button";
+import Input from "../../UIKit/Input";
+import Select from "../../UIKit/Select";
 
 type ValueType = {
   title: string
@@ -52,36 +55,35 @@ const CreateNoteForm: FC<{ setIsCreateFromOpen: (open: boolean) => void }> = ({s
   }
 
   return (
-    <section>
+    <section className="m-5">
       <form onSubmit={createNoteHandler}>
-        <label htmlFor="title">Name</label>
-        <input
+        <Input
+          labelName={'Name'}
           value={value.title}
           onChange={handleChange}
           type="text"
           id="title"
           name="title"
-          required/>
-        <label htmlFor="category">Category</label>
-        <select
+        />
+        <Select
+          labelName={'Category'}
           value={value.category}
           onChange={handleChange}
-          name="category"
-        >
-          <option value="Task">Task</option>
-          <option value="Random Thought">Random Thought</option>
-          <option value="Idea">Idea</option>
-          <option value="Quote">Quote</option>
-        </select>
-        <label htmlFor="content">Notes</label>
-        <input
+          name={"category"}
+          options={["Task", "Random Thought", "Idea", "Quote" ]}/>
+        <Input
+          labelName={'Notes'}
           value={value.content}
           onChange={handleChange}
           type="text"
           id="content"
           name="content"
-          required/>
-        <button type="submit">Add Note</button>
+        />
+        <Button
+          className="['h-9', 'cursor-pointer', 'rounded-sm', 'p-1', 'border-2', 'border-my-grey']"
+          type="submit"
+          label="Add Note"
+        />
       </form>
     </section>
   )

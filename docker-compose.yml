@@ -12,9 +12,12 @@ services:
     build: ./client
     ports:
       - "3000:3000"
+    depends_on:
+      - server
   db:
     image: 'postgres'
     environment:
       - POSTGRES_PASSWORD=postgres
     volumes:
       - './data/db:/var/lib/postgresql/data'
+

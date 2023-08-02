@@ -23,7 +23,7 @@ var __importStar = (this && this.__importStar) || function (mod) {
     return result;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.noteSchema = void 0;
+exports.toggleArchiveNoteSchema = exports.noteSchema = void 0;
 const yup = __importStar(require("yup"));
 exports.noteSchema = yup.object({
     id: yup.string().required(),
@@ -32,6 +32,9 @@ exports.noteSchema = yup.object({
     category: yup.string().required(),
     content: yup.string().required(),
     dates: yup.string().notRequired(),
+    archived: yup.boolean().required(),
+});
+exports.toggleArchiveNoteSchema = yup.object().shape({
     archived: yup.boolean().required(),
 });
 //# sourceMappingURL=validators.js.map
