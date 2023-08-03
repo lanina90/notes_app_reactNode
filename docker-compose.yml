@@ -7,7 +7,7 @@ services:
     depends_on:
       - db
     environment:
-      - DATABASE_URL=postgres://notes_user:postgres@db:5432/postgres
+      - DATABASE_URL=postgres://notes_user:postgres@db:5432/notes
   client:
     build: ./client
     ports:
