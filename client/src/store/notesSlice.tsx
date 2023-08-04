@@ -1,5 +1,12 @@
 import {createAsyncThunk, createSlice} from "@reduxjs/toolkit"
-import {fetchAllNotes, createNote, deleteNote, editNote, toggleArchiveOnServer, fetchStats} from "../services/api"
+import {
+  fetchAllNotes,
+  createNote,
+  deleteNote,
+  editNote,
+  fetchStats,
+  archiveOnServer, unArchiveOnServer
+} from "../services/api"
 
 export type NoteType = {
   id: string
@@ -79,12 +86,23 @@ export const editOneNote = createAsyncThunk(
   }
 )
 
-export const toggleArchiveNote = createAsyncThunk(
-  'notes/toggleArchiveNote',
-  async ({ id, archived }: { id: string, archived: boolean }) => {
+export const archiveNote = createAsyncThunk(
+  'notes/archiveNote',
+  async ({ id}: { id: string}) => {
     try {
-      const response = await toggleArchiveOnServer(id, !archived)
-      return response.data
+      return await archiveOnServer(id)
+    } catch (e) {
+      console.error('Error toggling archive:', e)
+      throw e
+    }
+  }
+)
+
+export const unArchiveNote = createAsyncThunk(
+  'notes/unArchiveNote',
+  async ({ id }: { id: string}) => {
+    try {
+      return await unArchiveOnServer(id)
     } catch (e) {
       console.error('Error toggling archive:', e)
       throw e
@@ -106,7 +124,6 @@ const notesSlice = createSlice({
       const newNote = action.payload
       state.notes.push(newNote);
       state.isLoading = false
-      console.log(action.payload)
     })
     builder.addCase(createNewNote.rejected, (state, action) => {
       state.isLoading = false
@@ -152,18 +169,33 @@ const notesSlice = createSlice({
       state.isLoading = false
       state.error = action.error.message
     })
-    builder.addCase(toggleArchiveNote.pending, (state) => {
+    builder.addCase(archiveNote.pending, (state) => {
       state.isLoading = true
     })
-    builder.addCase(toggleArchiveNote.fulfilled, (state, action) => {
+    builder.addCase(archiveNote.fulfilled, (state, action) => {
       const id = action.payload
       const noteToToggle = state.notes.find((note) => note.id === id)
       if (noteToToggle) {
-        noteToToggle.archived = !noteToToggle.archived
+        noteToToggle.archived = true
       }
       state.isLoading = false
     })
-    builder.addCase(toggleArchiveNote.rejected, (state, action) => {
+    builder.addCase(archiveNote.rejected, (state, action) => {
+      state.isLoading = false
+      state.error = action.error.message
+    })
+    builder.addCase(unArchiveNote.pending, (state) => {
+      state.isLoading = true
+    })
+    builder.addCase(unArchiveNote.fulfilled, (state, action) => {
+      const id = action.payload
+      const noteToToggle = state.notes.find((note) => note.id === id)
+      if (noteToToggle) {
+        noteToToggle.archived = false
+      }
+      state.isLoading = false
+    })
+    builder.addCase(unArchiveNote.rejected, (state, action) => {
       state.isLoading = false
       state.error = action.error.message
     })
