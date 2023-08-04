@@ -106,6 +106,7 @@ const notesSlice = createSlice({
       const newNote = action.payload
       state.notes.push(newNote);
       state.isLoading = false
+      console.log(action.payload)
     })
     builder.addCase(createNewNote.rejected, (state, action) => {
       state.isLoading = false
