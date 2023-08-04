@@ -20,7 +20,7 @@ app.use('/api/notes', router)
 
 const port = process.env.PORT || '5000'
 app.listen(port, () => {
-  console.log(`Сервер запущен на порту ${port}`)
+  console.log(`Server run at port: ${port}`)
 })
 
 export default app
