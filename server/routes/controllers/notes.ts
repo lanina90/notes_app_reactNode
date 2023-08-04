@@ -2,6 +2,7 @@
 import notes from '../../repositories/MockedDB.json'
 import {noteSchema, toggleArchiveNoteSchema} from '../../helpers/validators'
 import {Request, Response} from "express";
+import {Note} from "../../models/models";
 
 interface CategoryStats {
   active: number;
@@ -26,9 +27,8 @@ export const createNote = async (req: Request, res: Response) => {
   try {
     const newNote: NoteType = req.body
     noteSchema.validateSync(newNote)
-    const createdNote = { ...newNote }
-    notes.push(createdNote)
-    res.status(201).json(createdNote)
+    const createdNote = await Note.create({newNote})
+    res.json(createdNote)
   } catch (e) {
     res.status(400).json({message: 'Failed to create the note. Please ensure all fields are filled correctly.'})
   }
@@ -87,6 +87,7 @@ export const toggleArchiveNote = async (req: Request, res: Response) => {
 
 export const getAllNotes = async (req: Request, res: Response) => {
   try{
+    const notes = await Note.findAll();
     res.status(200).json(notes)
   } catch (e) {
     res.status(500).json({ message: 'An error occurred while fetching all notes.' })

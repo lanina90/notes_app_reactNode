@@ -19,7 +19,7 @@ const Select: FC<SelectType> = ({labelName, value, onChange, name, options}) => 
         name={name}
       >
         {options?.map((option: string) =>
-          <option value={option}>{option}</option>
+          <option key={option} value={option}>{option}</option>
         )}
       </select>
     </>
