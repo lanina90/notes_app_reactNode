@@ -28,9 +28,20 @@ export const editNote = async (id: string, updatedNote: NoteType) => {
   }
 }
 
-export const toggleArchiveOnServer = async (id: string, archived: boolean) => {
+
+export const archiveOnServer = async (id: string) => {
   try {
-    const { data } = await $host.patch('/notes/toggle/' + id, {archived: archived })
+    const { data } = await $host.patch('/notes/archive/' + id)
+    return data
+  } catch (e) {
+    console.error('Error toggling archive on server:', e)
+    throw e
+  }
+}
+
+export const unArchiveOnServer = async (id: string) => {
+  try {
+    const { data } = await $host.patch('/notes/unarchive/' + id)
     return data
   } catch (e) {
     console.error('Error toggling archive on server:', e)

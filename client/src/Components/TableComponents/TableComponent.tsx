@@ -2,7 +2,7 @@ import React, {FC, ReactNode, useEffect, useState} from 'react'
 import {getCategoryImage} from "../../utils/helperFunctions"
 import {fetchStatistics, NoteType} from "../../store/notesSlice"
 import EditNoteComponent from "../Forms/EditNoteComponent"
-import TableRowArchivedAndUnarchived from "./TableRowArchivedAndUnarchived"
+import TableRowArchive from "./TableRowArchive"
 import {useAppDispatch, useAppSelector} from "../../hooks"
 
 type TableComponentPropsType = {
@@ -42,7 +42,7 @@ const TableComponent: FC<TableComponentPropsType> = ({headers, tableShowFor}) =>
         <tbody>
         {tableShowFor === 'unarchived' || tableShowFor === 'archived' ?
           notesToShow.map((note: any) => (
-            <TableRowArchivedAndUnarchived
+            <TableRowArchive
               key={note.id}
               note={note}
               tableShowFor={tableShowFor}

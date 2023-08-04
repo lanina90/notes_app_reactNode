@@ -10,7 +10,4 @@ export const noteSchema  = yup.object({
   archived: yup.boolean().required(),
 })
 
-export const toggleArchiveNoteSchema = yup.object().shape({
-  archived: yup.boolean().required(),
-});
 
