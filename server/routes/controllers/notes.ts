@@ -1,8 +1,7 @@
-
 import notes from '../../repositories/MockedDB.json'
-import {noteSchema, toggleArchiveNoteSchema} from '../../helpers/validators'
+import {noteSchema} from '../../helpers/validators'
 import {Request, Response} from "express";
-import {Note} from "../../models/models";
+import UserNote from "../../repositories/Model";
 
 interface CategoryStats {
   active: number;
@@ -14,7 +13,7 @@ interface CategoriesCount {
 }
 
 interface NoteType {
-  id: string
+  id?: number
   title: string
   category: string
   content: string
@@ -25,39 +24,42 @@ interface NoteType {
 
 export const createNote = async (req: Request, res: Response) => {
   try {
-    const newNote: NoteType = req.body
-    noteSchema.validateSync(newNote)
-    const createdNote = await Note.create({newNote})
-    res.json(createdNote)
-  } catch (e) {
+    const newNote = req.body
+    noteSchema.validateSync(newNote, { abortEarly: false });
+    const createdNote = await UserNote.create(newNote)
+    res.status(201).json(createdNote)
+
+  } catch (e: any) {
+    console.log(e.errors);
     res.status(400).json({message: 'Failed to create the note. Please ensure all fields are filled correctly.'})
   }
 }
 
 export const editNote = async (req: Request, res: Response) => {
   try{
-    const id: string = req.params.id
+    const id: number = parseInt(req.params.id, 10);
     const updatedNote: NoteType = req.body
-    await noteSchema.validate(updatedNote)
-    const index: number = notes.findIndex((n: NoteType) => n.id === id)
-    if (index >= 0) {
-      notes[index] = { ...notes[index], ...updatedNote }
-      res.json(notes[index])
+    noteSchema.validateSync(updatedNote, { abortEarly: false });
+    const existingNote = await UserNote.findOne({ where: { id } });
+    if (existingNote) {
+      const updatedNoteInDB = await existingNote.update(updatedNote);
+      res.json(updatedNoteInDB);
     } else {
       res.status(404).json({ message: 'Note not found' })
     }
-  } catch (e) {
+  } catch (e: any) {
+    console.log(e.errors);
     res.status(500).json({ message: 'An error occurred while updating the note.' })
   }
 }
 
 export const deleteNote = async (req: Request, res: Response) => {
   try{
-    const id: string = req.params.id
-    const index:number = notes.findIndex((n) => n.id === id)
-    if (index >= 0) {
-      const deletedNote: NoteType = notes.splice(index, 1)[0]
-      res.json(deletedNote)
+    const id: number = parseInt(req.params.id, 10);
+    const noteToDelete = await UserNote.findOne({ where: { id } });
+    if (noteToDelete) {
+      await noteToDelete.destroy();
+      res.json({ message: 'Note has been deleted', id });
     } else {
       res.status(404).json({ message: 'Note not found' })
     }
@@ -66,29 +68,46 @@ export const deleteNote = async (req: Request, res: Response) => {
   }
 }
 
-export const toggleArchiveNote = async (req: Request, res: Response) => {
+export const archiveNote = async (req: Request, res: Response) => {
   try {
-
-    const id: string = req.params.id
-    const {archived} = req.body
-    const index: number = notes.findIndex((n) => n.id === id)
-    toggleArchiveNoteSchema.validateSync({archived})
-    if (index !== -1) {
-      notes[index] = { ...notes[index], archived: archived }
-      res.json(notes[index])
+    const id: number = parseInt(req.params.id, 10);
+    const noteToArchive = await UserNote.findOne({ where: { id } });
+    if (noteToArchive) {
+      noteToArchive.setDataValue('archived', true);
+      await noteToArchive.save();
+      res.json(noteToArchive);
     } else {
       res.status(404).json({ message: 'Note not found' })
     }
-  } catch (e) {
+  } catch (e: any) {
+    console.log(e.errors);
+    res.status(500).json({ message: 'An error occurred while updating the note.' })
+  }
+}
+
+export const unArchiveNote = async (req: Request, res: Response) => {
+  try {
+    const id: number = parseInt(req.params.id, 10);
+    const noteToArchive = await UserNote.findOne({ where: { id } });
+    if (noteToArchive) {
+      noteToArchive.setDataValue('archived', false);
+      await noteToArchive.save();
+      res.json(noteToArchive);
+    } else {
+      res.status(404).json({ message: 'Note not found' })
+    }
+  } catch (e: any) {
+    console.log(e.errors);
     res.status(500).json({ message: 'An error occurred while updating the note.' })
   }
 }
 
 
+
 export const getAllNotes = async (req: Request, res: Response) => {
   try{
-    const notes = await Note.findAll();
-    res.status(200).json(notes)
+    const userNotes = await UserNote.findAll();
+    res.status(200).json(userNotes)
   } catch (e) {
     res.status(500).json({ message: 'An error occurred while fetching all notes.' })
   }
@@ -97,27 +116,28 @@ export const getAllNotes = async (req: Request, res: Response) => {
 export const getOneNote = async (req: Request, res: Response) => {
   try{
 
-    const id: string = req.params.id
-    const note: NoteType | undefined = notes.find((n) => n.id === id)
+    const id: number = parseInt(req.params.id, 10);
+    const note = await UserNote.findOne({ where: { id } });
 
     if (note) {
-      noteSchema.validateSync(note)
+      noteSchema.validateSync(note, { abortEarly: false })
       res.json(note)
     } else {
       res.status(404).json({ message: 'Note not found' })
     }
-  } catch (e) {
+  } catch (e: any) {
+    console.log(e.errors);
     res.status(500).json({ message: 'An error occurred while fetching the note.' })
   }
 }
 
 export const getStats = async (req: Request, res: Response) => {
-
   try {
+    const allNotes = await UserNote.findAll()
 
-    const categoriesCount: CategoriesCount = notes.reduce((acc, note) => {
-      const status: "archived" | "active" = note.archived ? 'archived' : 'active'
-      const category: string = note.category
+    const categoriesCount = allNotes.reduce((acc, note) => {
+      const status: "archived" | "active" = note.getDataValue('archived') ? 'active' : 'archived';
+      const category: string = note.getDataValue('category');
 
       acc[category] = acc[category] || {active: 0, archived: 0}
       acc[category][status]++
@@ -128,4 +148,3 @@ export const getStats = async (req: Request, res: Response) => {
     res.status(500).json({ message: 'An error occurred while fetching statistics.' })
   }
 }
-

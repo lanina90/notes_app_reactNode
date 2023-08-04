@@ -2,7 +2,7 @@ import React, {FC, ReactNode, useEffect, useState} from 'react'
 import {getCategoryImage} from "../../utils/helperFunctions"
 import {fetchStatistics, NoteType} from "../../store/notesSlice"
 import EditNoteComponent from "../Forms/EditNoteComponent"
-import TableRowArchivedAndUnarchived from "./TableRowArchivedAndUnarchived"
+import TableRowArchived from "./TableRowArchived"
 import {useAppDispatch, useAppSelector} from "../../hooks"
 
 type TableComponentPropsType = {
@@ -12,14 +12,13 @@ type TableComponentPropsType = {
 
 const TableComponent: FC<TableComponentPropsType> = ({headers, tableShowFor}) => {
   const dispatch = useAppDispatch()
-  const archivedNotes = useAppSelector(state => state.notes.notes.filter(note => note.archived))
-  const notArchivedNotes = useAppSelector(state => state.notes.notes.filter(note => !note.archived))
-  const [editedNoteId, setEditedNoteId] = useState<string | null>(null)
-  const noteToEdit = notArchivedNotes.find((note: NoteType) => note.id === editedNoteId)
+  const archivedNotes = useAppSelector(state => state.notes.notes.filter(note => note && note.archived))
+  const notArchivedNotes = useAppSelector(state => state.notes.notes.filter(note => note && !note.archived))
   const stats = useAppSelector((state) => state.notes.stats)
+  const [editedNoteId, setEditedNoteId] = useState<number | null>(null)
+  const noteToEdit = notArchivedNotes.find((note: NoteType) => note.id! === editedNoteId!)
 
-
-  const handleEditNote = (id: string) => {
+  const handleEditNote = (id: number) => {
     setEditedNoteId(id)
   }
 
@@ -42,7 +41,7 @@ const TableComponent: FC<TableComponentPropsType> = ({headers, tableShowFor}) =>
         <tbody>
         {tableShowFor === 'unarchived' || tableShowFor === 'archived' ?
           notesToShow.map((note: any) => (
-            <TableRowArchivedAndUnarchived
+            <TableRowArchived
               key={note.id}
               note={note}
               tableShowFor={tableShowFor}

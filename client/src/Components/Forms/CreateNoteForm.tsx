@@ -1,5 +1,4 @@
 import {ChangeEvent, FC, FormEvent, useState} from 'react'
-import {v4 as uuidv4} from 'uuid'
 import {createDate, getDatesFromString} from "../../utils/helperFunctions"
 import {useAppDispatch} from "../../hooks"
 import {createNewNote, fetchStatistics} from "../../store/notesSlice"
@@ -33,7 +32,6 @@ const CreateNoteForm: FC<{ setIsCreateFromOpen: (open: boolean) => void }> = ({s
   const createNoteHandler = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault()
     const newNote = {
-      id: uuidv4(),
       title: value.title,
       category: value.category,
       content: value.content,

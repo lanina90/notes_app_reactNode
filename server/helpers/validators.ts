@@ -1,7 +1,6 @@
 
 import * as yup from 'yup'
 export const noteSchema  = yup.object({
-  id: yup.string().required(),
   title: yup.string().required(),
   created: yup.string().required(),
   category: yup.string().required(),
