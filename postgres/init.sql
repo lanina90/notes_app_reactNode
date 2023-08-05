@@ -3,43 +3,21 @@ CREATE DATABASE test;
 \c test
 
 CREATE TABLE user_notes (
-  id: {
-      type: DataTypes.INTEGER,
-      allowNull: false,
-      primaryKey: true,
-      autoIncrement: true
-    },
-    title: {
-      type: DataTypes.STRING,
-      allowNull: false
-    },
-    content: {
-      type: DataTypes.STRING,
-      allowNull: false
-    },
-    category: {
-      type: DataTypes.STRING,
-      allowNull: false
-    },
-    created: {
-      type: DataTypes.STRING,
-      allowNull: false
-    },
-    dates: {
-      type: DataTypes.STRING,
-      allowNull: true
-    },
-    archived: {
-      type: DataTypes.BOOLEAN,
-      defaultValue: false,
-    }
+  id SERIAL PRIMARY KEY,
+  title VARCHAR(255) NOT NULL,
+  content TEXT NOT NULL,
+  category VARCHAR(255) NOT NULL,
+  created VARCHAR(255) NOT NULL,
+  dates VARCHAR(255),
+  archived BOOLEAN DEFAULT false
 );
 
-INSERT INTO user_notes VALUES ('Shopping list', 'June 21, 2023', 'Bread, cucumbers, salt', 'Task', '', true),
-INSERT INTO user_notes VALUES ('The theory of evolution', 'June 29, 2023', 'The evolution theory', 'Random Thought', '', false),
-INSERT INTO user_notes VALUES ('New feature', 'July 15, 2023', 'Implement new feature for app before 18/07/2023', 'Idea', '', false),
-INSERT INTO user_notes VALUES ('Workout routine', 'July 20, 2023', '1. Pushups 2. Situps 3. Squats', 'Task', '20/07/2023, 24/07/2023', false),
-INSERT INTO user_notes VALUES 'Inspirational Quote', 'July 20, 2023', 'The most important step is always the next one.', 'Quote', '', false),
-INSERT INTO user_notes VALUES ('Grocery shopping', 'July 23, 2023', 'Milk, Eggs, Bread, Fruits', 'Task', '29/07/2023', false),
-INSERT INTO user_notes VALUES ('Car service', 'July 25, 2023', 'Need to service the car', 'Task', '1/08/2023', false);
+INSERT INTO user_notes (title, created, content, category, dates, archived) VALUES
+    ('Shopping list', 'June 21, 2023', 'Bread, cucumbers, salt', 'Task', null, true),
+    ('The theory of evolution', 'June 2112, 2023', 'The evolution theory', 'Random Thought', null, false),
+    ('New feature', 'June 20, 2023', 'Implement new feature for app before 18/07/2023', 'Idea', null, false),
+    ('Workout routine', 'July 21, 2023', '1. Pushups 2. Situps 3. Squats', 'Task', '2023-07-20, 2023-07-24', false),
+    ('Inspirational Quote', 'July 11, 2023', 'The most important step is always the next one.', 'Quote', null, false),
+    ('Grocery shopping', 'August 1, 2023', 'Milk, Eggs, Bread, Fruits', 'Task', '2023-07-29', false),
+    ('Car service', 'June 21, 2023', 'Need to service the car', 'Task', '2023-08-01', false);
 
