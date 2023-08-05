@@ -136,7 +136,7 @@ export const getStats = async (req: Request, res: Response) => {
     const allNotes = await UserNote.findAll()
 
     const categoriesCount = allNotes.reduce((acc, note) => {
-      const status: "archived" | "active" = note.getDataValue('archived') ? 'active' : 'archived';
+      const status: "archived" | "active" = note.getDataValue('archived') ? 'archived' : 'active';
       const category: string = note.getDataValue('category');
 
       acc[category] = acc[category] || {active: 0, archived: 0}
