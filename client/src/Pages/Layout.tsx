@@ -4,6 +4,7 @@ import CreateNoteForm from "../Components/Forms/CreateNoteForm"
 import {FC} from "react"
 import {useAppDispatch} from "../hooks"
 import {fetchNotes} from "../store/notesSlice"
+import Button from "../UIKit/Button";
 
 const Layout: FC = () => {
   const [isCreateFromOpen, setIsCreateFromOpen] = useState<boolean>(false)
@@ -31,10 +32,11 @@ const Layout: FC = () => {
 
       />
       <div className="create-btn">
-        <button
-          onClick={() => setIsCreateFromOpen(true)}
-        >Create Note
-        </button>
+        <Button
+          className="cursor-pointer rounded-sm p-1 border-2 border-my-grey"
+          type={'button'}
+          label={'Create Note'}
+          onClick={() => setIsCreateFromOpen(true)}/>
       </div>
       {isCreateFromOpen && <CreateNoteForm setIsCreateFromOpen={setIsCreateFromOpen}/>}
 

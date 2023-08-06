@@ -1,4 +1,3 @@
-
 import { $host } from './index'
 import {NoteType} from "../store/notesSlice"
 
@@ -11,7 +10,7 @@ export const createNote = async (noteData: NoteType) => {
     return null
   }
 }
-export const deleteNote = async (id: string) => {
+export const deleteNote = async (id: number) => {
   try{
     const { data } = await $host.delete('/notes/' + id)
     return data
@@ -19,7 +18,7 @@ export const deleteNote = async (id: string) => {
     console.error('Error deleting note:', e)
   }
 }
-export const editNote = async (id: string, updatedNote: NoteType) => {
+export const editNote = async (id: number, updatedNote: NoteType) => {
   try{
     const { data } = await $host.patch('/notes/' + id, updatedNote)
     return data
@@ -28,9 +27,20 @@ export const editNote = async (id: string, updatedNote: NoteType) => {
   }
 }
 
-export const toggleArchiveOnServer = async (id: string, archived: boolean) => {
+
+export const archiveOnServer = async (id: number) => {
   try {
-    const { data } = await $host.patch('/notes/toggle/' + id, {archived: archived })
+    const { data } = await $host.patch('/notes/archive/' + id)
+    return data
+  } catch (e) {
+    console.error('Error toggling archive on server:', e)
+    throw e
+  }
+}
+
+export const unArchiveOnServer = async (id: number) => {
+  try {
+    const { data } = await $host.patch('/notes/unarchive/' + id)
     return data
   } catch (e) {
     console.error('Error toggling archive on server:', e)
@@ -56,6 +66,3 @@ export const fetchStats = async () => {
     return null
   }
 }
-
-
-

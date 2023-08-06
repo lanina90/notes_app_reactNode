@@ -1,15 +1,15 @@
 import React, {FC} from 'react'
 import {getCategoryImage, trimText} from "../../utils/helperFunctions"
-import {deleteOneNote, fetchNotes, fetchStatistics, NoteType, toggleArchiveNote} from "../../store/notesSlice"
+import {archiveNote, deleteOneNote, fetchNotes, fetchStatistics, NoteType, unArchiveNote} from "../../store/notesSlice"
 import {useAppDispatch} from "../../hooks"
 
-type TableRowArchivedAndUnarchivedPropsType = {
+type TableRowArchivedPropsType = {
   note: NoteType
   tableShowFor: string
-  onEditNote: ((open: string) => void)
+  onEditNote: ((open: number) => void)
 }
 
-const TableRowArchivedAndUnarchived: FC<TableRowArchivedAndUnarchivedPropsType> = ({
+const TableRowArchived: FC<TableRowArchivedPropsType> = ({
                                                                                      note,
                                                                                      tableShowFor,
                                                                                      onEditNote
@@ -17,7 +17,7 @@ const TableRowArchivedAndUnarchived: FC<TableRowArchivedAndUnarchivedPropsType> 
 
   const dispatch = useAppDispatch()
 
-  const removeNoteHandler = (id: string) => {
+  const removeNoteHandler = (id: number) => {
     dispatch(deleteOneNote(id))
       .then((response) => {
         if (response.meta.requestStatus === 'fulfilled') {
@@ -27,8 +27,17 @@ const TableRowArchivedAndUnarchived: FC<TableRowArchivedAndUnarchivedPropsType> 
       })
   }
 
-  const toggleNoteHandler = (id: string, archived: boolean) => {
-    dispatch(toggleArchiveNote({ id, archived}))
+  const archiveNoteHandler = (id: number) => {
+    dispatch(archiveNote({ id}))
+      .then((response) => {
+        if (response.meta.requestStatus === 'fulfilled') {
+          dispatch(fetchNotes())
+          dispatch(fetchStatistics())
+        }
+      })
+  }
+  const unArchiveNoteHandler = (id: number) => {
+    dispatch(unArchiveNote({ id}))
       .then((response) => {
         if (response.meta.requestStatus === 'fulfilled') {
           dispatch(fetchNotes())
@@ -54,18 +63,18 @@ const TableRowArchivedAndUnarchived: FC<TableRowArchivedAndUnarchivedPropsType> 
       <td>{note.dates}</td>
       {tableShowFor === 'archived' ? (
         <td>
-          <div onClick={() => toggleNoteHandler(note.id, note.archived )} className="pic unarchive"/>
+          <div onClick={() => unArchiveNoteHandler(note.id!)} className="pic unarchive"/>
         </td>
       ) : (
         <>
           <td>
-            <div onClick={() => onEditNote(note.id)} className="pic edit" />
+            <div onClick={() => onEditNote(note.id!)} className="pic edit" />
           </td>
           <td>
-            <div onClick={() => toggleNoteHandler(note.id, note.archived )} className="pic archive"/>
+            <div onClick={() => archiveNoteHandler(note.id! )} className="pic archive"/>
           </td>
           <td>
-            <div onClick={() => removeNoteHandler(note.id)} className="pic remove"/>
+            <div onClick={() => removeNoteHandler(note.id!)} className="pic remove"/>
           </td>
         </>
       )}
@@ -73,4 +82,4 @@ const TableRowArchivedAndUnarchived: FC<TableRowArchivedAndUnarchivedPropsType> 
   )
 }
 
-export default TableRowArchivedAndUnarchived
+export default TableRowArchived

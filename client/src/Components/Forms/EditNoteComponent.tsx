@@ -2,6 +2,9 @@ import React, {ChangeEvent, FC, FormEvent, useEffect, useState} from 'react'
 import {getDatesFromString} from "../../utils/helperFunctions"
 import {editOneNote, NoteType} from "../../store/notesSlice"
 import {useAppDispatch} from "../../hooks"
+import Button from "../../UIKit/Button";
+import Select from "../../UIKit/Select";
+import Input from "../../UIKit/Input";
 
 type EditNoteComponentPropsType = {
   note: NoteType
@@ -57,30 +60,14 @@ const EditNoteComponent: FC<EditNoteComponentPropsType> = ({setEditedNoteId, not
   return (
     <section className="edit-module">
       <form className="edit-form" onSubmit={editNoteHandler}>
-        <label htmlFor="title">Title</label>
-        <input
-          value={value.title}
-          onChange={handleChange}
-          type="text"
-          name="title"
-        />
-        <label htmlFor="content">Content</label>
-        <input value={value.content}
-               onChange={handleChange}
-               type="text"
-               name="content"/>
-        <label htmlFor="category">Category</label>
-        <select
-          value={value.category}
-          onChange={handleChange}
-          name="category"
-        >
-          <option value="Task">Task</option>
-          <option value="Random Thought">Random Thought</option>
-          <option value="Idea">Idea</option>
-          <option value="Quote">Quote</option>
-        </select>
-        <button type="submit">Save</button>
+        <Input labelName={"Title"} value={value.title} onChange={handleChange} type={"text"} id={"title"}
+               name={"title"}/>
+        <Input labelName={"Content"} value={value.content} onChange={handleChange} type={"text"} id={"content"}
+               name={"content"}/>
+        <Select labelName={"Category"} value={value.category} onChange={handleChange} name={"category"}
+                options={["Task", "Random Thought", "Idea", "Quote"]}/>
+
+        <Button type={'submit'} label={'Save'}/>
       </form>
     </section>
   )
